@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "prototype-mc-wgpu",
+  "version": "${version}",
+  "name": "prototype-mc-wgpu",
+  "description": "Prototyype of Minecraft Mod using WGPU",
+  "authors": [
+    "ORITO Itsuki"
+  ],
+  "contact": {
+    "homepage": "https://example.com/",
+    "issues": "https://example.com/",
+    "sources": "https://example.com/"
+  },
+  "license": "MIT OR Apache-2.0",
+  "icon": "assets/prototype-mc-wgpu/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      {
+        "adapter": "kotlin",
+        "value": "net.orito_itsuki.prototype_mc_wgpu.PrototypeMcWgpu"
+      }
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=0.13.3",
+    "fabric": "*",
+    "fabric-language-kotlin": ">=1.7.4+kotlin.1.7.0",
+    "minecraft": "1.19.x",
+    "java": ">=17"
+  }
+}
