@@ -8,8 +8,6 @@ object WgpuRendererNative {
         nativeLoader.loadLibrary("wgpu_renderer")
     }
 
-    external fun rustNative()
-
     external fun initWindow()
 
     external fun draw()

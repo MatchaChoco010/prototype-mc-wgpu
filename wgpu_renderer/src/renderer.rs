@@ -184,6 +184,7 @@ pub fn init() {
 
             let window = WindowBuilder::new()
                 .with_title("Wgpu Renderer")
+                .with_inner_size(winit::dpi::PhysicalSize::new(800, 600))
                 .build(&event_loop)
                 .unwrap();
 
