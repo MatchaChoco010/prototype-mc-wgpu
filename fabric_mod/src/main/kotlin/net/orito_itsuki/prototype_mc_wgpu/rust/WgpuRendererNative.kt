@@ -1,4 +1,4 @@
-package net.orito_itsuki.prototype_mc_wgpu
+package net.orito_itsuki.prototype_mc_wgpu.rust
 
 import fr.stardustenterprises.yanl.NativeLoader
 
@@ -9,4 +9,10 @@ object WgpuRendererNative {
     }
 
     external fun rustNative()
+
+    external fun initWindow()
+
+    external fun draw()
+
+    external fun getWindowSize(): Any
 }

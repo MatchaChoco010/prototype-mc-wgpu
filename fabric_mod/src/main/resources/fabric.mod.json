@@ -23,6 +23,9 @@
       }
     ]
   },
+  "mixins": [
+    "prototype_mc_wgpu.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",

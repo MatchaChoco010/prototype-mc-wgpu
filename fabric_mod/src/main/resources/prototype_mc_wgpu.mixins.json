@@ -1,0 +1,12 @@
+{
+  "required": true,
+  "package": "net.orito_itsuki.prototype_mc_wgpu.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [],
+  "client": [
+    "client.WindowMixin"
+  ]
+}
