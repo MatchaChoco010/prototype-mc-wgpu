@@ -1,0 +1,14 @@
+accessWidener   v1  named
+
+accessible  class   net/minecraft/client/render/RenderLayer$MultiPhase
+accessible  class   net/minecraft/client/render/RenderLayer$MultiPhaseParameters
+accessible  class   net/minecraft/client/render/RenderPhase$TextureBase
+accessible  field   net/minecraft/client/render/RenderLayer$MultiPhase  phases  Lnet/minecraft/client/render/RenderLayer$MultiPhaseParameters;
+accessible  field   net/minecraft/client/render/RenderLayer$MultiPhaseParameters    texture Lnet/minecraft/client/render/RenderPhase$TextureBase;
+accessible  method  net/minecraft/client/render/RenderPhase$TextureBase getId   ()Ljava/util/Optional;
+
+accessible  class   net/minecraft/client/render/WorldRenderer$ChunkInfo
+accessible  class   net/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk
+accessible  field   net/minecraft/client/render/WorldRenderer   chunkInfos  Lit/unimi/dsi/fastutil/objects/ObjectArrayList;
+accessible  field   net/minecraft/client/render/WorldRenderer   blockEntityRenderDispatcher  Lnet/minecraft/client/render/block/entity/BlockEntityRenderDispatcher;
+accessible  field   net/minecraft/client/render/WorldRenderer$ChunkInfo   chunk  Lnet/minecraft/client/render/chunk/ChunkBuilder$BuiltChunk;

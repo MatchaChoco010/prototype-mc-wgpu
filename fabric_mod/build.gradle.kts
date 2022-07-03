@@ -11,6 +11,10 @@ plugins {
     id("fr.stardustenterprises.rust.importer") version libs.versions.rust.importer
 }
 
+loom {
+    accessWidenerPath.set(file("src/main/resources/prototype_mc_wgpu.accesswidener"))
+}
+
 dependencies {
     versionCatalogs {
         minecraft(libs.minecraft)

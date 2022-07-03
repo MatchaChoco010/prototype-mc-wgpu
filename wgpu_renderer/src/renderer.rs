@@ -1,22 +1,25 @@
-use std::sync::Arc;
-use tokio::task::block_in_place;
-use tokio::{runtime::Runtime, sync::mpsc::unbounded_channel};
-use winit::{
-    event::*,
-    event_loop::{ControlFlow, EventLoop},
-    window::{Window, WindowBuilder},
-};
+use once_cell::sync::Lazy;
+use std::sync::{Arc, Mutex};
+use winit::{event::*, window::Window};
 
-use crate::event::{self, MinecraftEvent};
+use crate::event::MinecraftEvent;
+use crate::scene::{self, MinecraftMeshVertexFormat};
 use crate::window_size;
 
-struct Renderer {
+mod camera_buffer;
+mod render_pipeline;
+mod vertex;
+use camera_buffer::CameraBuffer;
+
+pub struct Renderer {
     window: Window,
     surface: wgpu::Surface,
     device: wgpu::Device,
     queue: wgpu::Queue,
     config: wgpu::SurfaceConfiguration,
     size: winit::dpi::PhysicalSize<u32>,
+    render_pipeline: wgpu::RenderPipeline,
+    camera: CameraBuffer,
 }
 impl Renderer {
     async fn new(window: Window) -> Self {
@@ -54,6 +57,14 @@ impl Renderer {
         };
         surface.configure(&device, &config);
 
+        let camera = CameraBuffer::new(&device);
+
+        let render_pipeline = render_pipeline::create_position_color_texture_light_normal(
+            &device,
+            config.format,
+            camera.bind_group_layout(),
+        );
+
         Self {
             window,
             surface,
@@ -61,6 +72,8 @@ impl Renderer {
             queue,
             config,
             size,
+            render_pipeline,
+            camera,
         }
     }
 
@@ -82,10 +95,15 @@ impl Renderer {
     }
 
     fn render(&mut self) -> Result<(), wgpu::SurfaceError> {
+        let scene = scene::get_scene();
+        let scene = scene.lock().unwrap();
+
         let output = self.surface.get_current_texture()?;
         let view = output
             .texture
             .create_view(&wgpu::TextureViewDescriptor::default());
+
+        self.camera.update_view_proj(&self.queue, &scene.camera);
 
         let mut encoder = self
             .device
@@ -94,7 +112,7 @@ impl Renderer {
             });
 
         {
-            let _render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
+            let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor {
                 label: Some("Render Pass"),
                 color_attachments: &[wgpu::RenderPassColorAttachment {
                     view: &view,
@@ -111,9 +129,23 @@ impl Renderer {
                 }],
                 depth_stencil_attachment: None,
             });
+            render_pass.set_bind_group(0, self.camera.bind_group(), &[]);
+
+            for mesh in &scene.minecraft_meshes {
+                match mesh.vertex_format {
+                    MinecraftMeshVertexFormat::PositionColorTextureLightNormal => {
+                        render_pass.set_pipeline(&self.render_pipeline);
+                        render_pass.set_vertex_buffer(0, mesh.vertex_buffer.slice(..));
+                        render_pass.set_index_buffer(
+                            mesh.index_buffer.slice(..),
+                            wgpu::IndexFormat::Uint32,
+                        );
+                        render_pass.draw_indexed(0..mesh.num_indices, 0, 0..1);
+                    }
+                }
+            }
         }
 
-        // submit will accept anything that implements IntoIter
         self.queue.submit(std::iter::once(encoder.finish()));
         output.present();
 
@@ -151,7 +183,7 @@ impl Renderer {
         }
     }
 
-    fn process_event(&mut self, event: MinecraftEvent) {
+    pub fn process_event(&mut self, event: MinecraftEvent) {
         match event {
             MinecraftEvent::Draw => {
                 self.window.request_redraw();
@@ -163,53 +195,19 @@ impl Renderer {
             }
         }
     }
+
+    pub fn device(&self) -> &wgpu::Device {
+        &self.device
+    }
 }
 
-pub fn init() {
-    env_logger::init();
+static RENDERER: Lazy<Arc<Mutex<Option<Renderer>>>> = Lazy::new(|| Arc::new(Mutex::new(None)));
 
-    let (tx, mut rx) = unbounded_channel();
-    event::set_tx(tx.clone());
+pub async fn new(window: Window) {
+    let renderer = Renderer::new(window).await;
+    *RENDERER.lock().unwrap() = Some(renderer);
+}
 
-    let runtime = Arc::new(Runtime::new().unwrap());
-    runtime.spawn({
-        let runtime = runtime.clone();
-        async move {
-            #[cfg(target_os = "linux")]
-            let event_loop: EventLoop<()> =
-                winit::platform::unix::EventLoopExtUnix::new_any_thread();
-            #[cfg(target_os = "windows")]
-            let event_loop: EventLoop<()> =
-                winit::platform::windows::EventLoopExtWindows::new_any_thread();
-
-            let window = WindowBuilder::new()
-                .with_title("Wgpu Renderer")
-                .with_inner_size(winit::dpi::PhysicalSize::new(800, 600))
-                .build(&event_loop)
-                .unwrap();
-
-            let mut state = pollster::block_on(Renderer::new(window));
-
-            runtime.spawn(async move {
-                loop {
-                    let event = rx.recv().await.unwrap();
-                    state.process_event(event);
-                }
-            });
-
-            block_in_place(|| {
-                event_loop.run(move |event, _, control_flow| {
-                    *control_flow = ControlFlow::Wait;
-                    match event {
-                        Event::WindowEvent { ref event, .. } => match event {
-                            WindowEvent::CloseRequested => *control_flow = ControlFlow::Exit,
-                            _ => (),
-                        },
-                        _ => (),
-                    }
-                    event::send(MinecraftEvent::WinitEvent(event.to_static()));
-                });
-            })
-        }
-    });
+pub fn get_renderer() -> Arc<Mutex<Option<Renderer>>> {
+    RENDERER.clone()
 }

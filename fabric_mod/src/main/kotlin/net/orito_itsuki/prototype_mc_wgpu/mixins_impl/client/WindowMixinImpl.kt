@@ -1,8 +1,7 @@
 package net.orito_itsuki.prototype_mc_wgpu.mixins_impl.client
 
 import net.minecraft.client.util.Window
-import net.orito_itsuki.prototype_mc_wgpu.rust.WgpuRendererNative
-import net.orito_itsuki.prototype_mc_wgpu.rust.WindowSize
+import net.orito_itsuki.prototype_mc_wgpu.rust.*
 import org.lwjgl.glfw.GLFW
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
@@ -12,7 +11,8 @@ object WindowMixinImpl {
     private var height = 0
 
     fun onSwapBuffers(window: Window, ci: CallbackInfo) {
-        WgpuRendererNative.draw()
+        WgpuRendererNative.draw(WgpuDrawCommand(MinecraftWorld, WgpuCamera))
+
         val ws = WgpuRendererNative.getWindowSize() as WindowSize
         width = ws.innerWidth
         height = ws.innerHeight

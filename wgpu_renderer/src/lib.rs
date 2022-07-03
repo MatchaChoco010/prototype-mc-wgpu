@@ -1,9 +1,11 @@
-use jni::objects::{JObject, JValue};
+use jni::objects::{JClass, JObject, JValue};
 use jni::sys::jint;
 use jni::JNIEnv;
 
 mod event;
 mod renderer;
+mod scene;
+mod window;
 mod window_size;
 use event::*;
 
@@ -11,13 +13,16 @@ use event::*;
 pub extern "system" fn Java_net_orito_1itsuki_prototype_1mc_1wgpu_rust_WgpuRendererNative_initWindow(
     _env: JNIEnv,
 ) {
-    renderer::init();
+    window::init();
 }
 
 #[no_mangle]
 pub extern "system" fn Java_net_orito_1itsuki_prototype_1mc_1wgpu_rust_WgpuRendererNative_draw(
-    _env: JNIEnv,
+    env: JNIEnv,
+    _class: JClass,
+    command: JObject,
 ) {
+    scene::apply_command(env, command);
     event::send(MinecraftEvent::Draw);
 }
 

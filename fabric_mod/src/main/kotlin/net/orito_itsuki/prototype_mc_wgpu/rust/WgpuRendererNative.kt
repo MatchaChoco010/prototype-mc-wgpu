@@ -10,7 +10,7 @@ object WgpuRendererNative {
 
     external fun initWindow()
 
-    external fun draw()
+    external fun draw(command: WgpuDrawCommand)
 
     external fun getWindowSize(): Any
 }

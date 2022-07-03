@@ -26,6 +26,7 @@
   "mixins": [
     "prototype_mc_wgpu.mixins.json"
   ],
+  "accessWidener" : "prototype_mc_wgpu.accesswidener",
   "depends": {
     "fabricloader": ">=0.13.3",
     "fabric": "*",
