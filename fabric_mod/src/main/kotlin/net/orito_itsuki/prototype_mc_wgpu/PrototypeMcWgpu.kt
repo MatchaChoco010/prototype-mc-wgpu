@@ -1,9 +1,11 @@
 package net.orito_itsuki.prototype_mc_wgpu
 
 import net.fabricmc.api.ModInitializer
+import net.orito_itsuki.prototype_mc_wgpu.rust.FileExtractor
 import net.orito_itsuki.prototype_mc_wgpu.rust.WgpuRendererNative
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import kotlin.concurrent.thread
 
 @Suppress("UNUSED")
 object PrototypeMcWgpu: ModInitializer {
@@ -12,5 +14,6 @@ object PrototypeMcWgpu: ModInitializer {
 
     override fun onInitialize() {
         WgpuRendererNative.initWindow()
+        thread { FileExtractor.extract() }
     }
 }

@@ -1,22 +1,24 @@
 package net.orito_itsuki.prototype_mc_wgpu.mixins_impl.client
 
 import net.minecraft.client.util.Window
+import net.orito_itsuki.prototype_mc_wgpu.PrototypeMcWgpu
 import net.orito_itsuki.prototype_mc_wgpu.rust.*
 import org.lwjgl.glfw.GLFW
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable
+import java.net.URLDecoder
 
 object WindowMixinImpl {
     private var width = 0
     private var height = 0
 
     fun onSwapBuffers(window: Window, ci: CallbackInfo) {
-        WgpuRendererNative.draw(WgpuDrawCommand(MinecraftWorld, WgpuCamera))
-
         val ws = WgpuRendererNative.getWindowSize() as WindowSize
         width = ws.innerWidth
         height = ws.innerHeight
         GLFW.glfwSetWindowSize(window.handle, width, height)
+
+        WgpuRendererNative.draw(WgpuDrawCommand(MinecraftWorld, WgpuCamera, FileExtractor.isFinishFileExtract))
     }
 
     fun onGetWidth(ci: CallbackInfoReturnable<Int>) {

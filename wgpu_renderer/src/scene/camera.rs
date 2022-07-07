@@ -1,3 +1,4 @@
+#[derive(Debug, Clone, Copy)]
 pub struct Camera {
     pub fov_y: f32,
     pub near: f32,

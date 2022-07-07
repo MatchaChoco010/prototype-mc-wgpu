@@ -84,7 +84,7 @@ object MinecraftWorld {
     class RustVertexConsumerProvider(private val entityType: String): VertexConsumerProvider {
         override fun getBuffer(renderLayer: RenderLayer): VertexConsumer {
             val texture = (renderLayer as RenderLayer.MultiPhase).phases.texture
-            val mesh = MinecraftMesh(entityType, texture.id.get().toString(), renderLayer.vertexFormat.toString(), 0, 0, 0, 0)
+            val mesh = MinecraftMesh(entityType, renderLayer.vertexFormat.toString(), texture.id.get().toString(), 0, 0, 0, 0)
             meshes.add(mesh)
             return RustVertexConsumer(renderLayer.vertexFormat, renderLayer.drawMode, mesh)
         }

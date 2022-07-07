@@ -26,11 +26,6 @@ object WorldRendererMixinImpl {
 //        PrototypeMcWgpu.LOGGER.info("start my render")
         MinecraftWorld.resetIndices()
 
-        println("topLeft (${camera.projection.topLeft.x}, ${camera.projection.topLeft.y}, ${camera.projection.topLeft.z})")
-        println("topRight (${camera.projection.topRight.x}, ${camera.projection.topRight.y}, ${camera.projection.topRight.z})")
-        println("bottomLeft (${camera.projection.bottomLeft.x}, ${camera.projection.bottomLeft.y}, ${camera.projection.bottomLeft.z})")
-        println("bottomRight (${camera.projection.bottomRight.x}, ${camera.projection.bottomRight.y}, ${camera.projection.bottomRight.z})")
-
 //        WgpuCamera.fovY = atan2(camera.projection.topLeft.y, camera.projection.topLeft.z).toFloat()
         WgpuCamera.fovY = Math.toRadians(90.0).toFloat()
         WgpuCamera.near = 0.01F
@@ -40,10 +35,6 @@ object WorldRendererMixinImpl {
         WgpuCamera.aspectRatio = 800F / 600F
         WgpuCamera.yaw = Math.toRadians(camera.yaw.toDouble()).toFloat()
         WgpuCamera.pitch = Math.toRadians(camera.pitch.toDouble()).toFloat()
-
-        println("fovY: ${WgpuCamera.fovY}")
-        println("far: ${WgpuCamera.far}")
-        println("aspectratio: ${WgpuCamera.aspectRatio}")
 
         val vec3d: Vec3d = camera.pos
         val d = vec3d.getX()

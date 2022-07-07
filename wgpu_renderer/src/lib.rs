@@ -1,13 +1,15 @@
 use jni::objects::{JClass, JObject, JValue};
 use jni::sys::jint;
 use jni::JNIEnv;
+use once_cell::sync::Lazy;
+use tokio::runtime::Runtime;
 
-mod event;
 mod renderer;
+mod resources;
 mod scene;
 mod window;
-mod window_size;
-use event::*;
+
+pub static RUNTIME: Lazy<Runtime> = Lazy::new(|| Runtime::new().unwrap());
 
 #[no_mangle]
 pub extern "system" fn Java_net_orito_1itsuki_prototype_1mc_1wgpu_rust_WgpuRendererNative_initWindow(
@@ -22,15 +24,14 @@ pub extern "system" fn Java_net_orito_1itsuki_prototype_1mc_1wgpu_rust_WgpuRende
     _class: JClass,
     command: JObject,
 ) {
-    scene::apply_command(env, command);
-    event::send(MinecraftEvent::Draw);
+    scene::submit_command(env, command);
 }
 
 #[no_mangle]
 pub extern "system" fn Java_net_orito_1itsuki_prototype_1mc_1wgpu_rust_WgpuRendererNative_getWindowSize(
     env: JNIEnv,
 ) -> JObject {
-    let (w, h) = window_size::inner_size();
+    let (w, h) = window::inner_size();
     let class = env
         .find_class("net/orito_itsuki/prototype_mc_wgpu/rust/WindowSize")
         .unwrap();

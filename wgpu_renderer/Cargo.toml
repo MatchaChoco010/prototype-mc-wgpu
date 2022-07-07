@@ -16,6 +16,9 @@ mint = "0.5.9"
 once_cell = "1.12.0"
 pollster = "0.2.5"
 winit = "0.26.1"
+anyhow = "1.0.58"
+zip = "0.6.2"
+image = { version = "0.24.2", features = ["png"] }
 
 [dependencies.tokio]
 version = "1.19.2"
@@ -26,5 +29,4 @@ version = "0.15.8"
 features = ["mint"]
 
 [dependencies.wgpu]
-git = "https://github.com/gfx-rs/wgpu.git"
-branch = "gecko"
+version = "0.13.1"
